@@ -7,11 +7,11 @@ namespace BackEndSGTA.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class VehiculoControllers : ControllerBase
+public class VehiculoController : ControllerBase
 {
     private readonly AppDbContext _context;
 
-    public VehiculoControllers(AppDbContext context)
+    public VehiculoController(AppDbContext context)
     {
         _context = context;
     }
@@ -43,7 +43,7 @@ public class VehiculoControllers : ControllerBase
 
     // POST: api/Vehiculos
     [HttpPost]
-    public async Task<ActionResult<Vehiculo>> PostVehiculo(Vehiculo vehiculo)
+    public async Task<ActionResult<Vehiculo>> PostVehiculo([FromBody] Vehiculo vehiculo)
     {
         _context.Vehiculos.Add(vehiculo);
         await _context.SaveChangesAsync();
@@ -53,7 +53,7 @@ public class VehiculoControllers : ControllerBase
 
     // PUT: api/Vehiculos/5
     [HttpPut("{id}")]
-    public async Task<IActionResult> PutVehiculo(int id, Vehiculo vehiculo)
+    public async Task<IActionResult> PutVehiculo(int id, [FromBody] Vehiculo vehiculo)
     {
         if (id != vehiculo.IdVehiculo)
             return BadRequest();

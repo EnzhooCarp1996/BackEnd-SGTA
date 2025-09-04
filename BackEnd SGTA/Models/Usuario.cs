@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using BackEndSGTA.Helpers;
 
 namespace BackEndSGTA.Models;
 
@@ -7,16 +8,16 @@ public class Usuario
     public int IdUsuario { get; set; }
 
     [Required]
-    [StringLength(100)]
+    [StringLength(Mensajes.MAXTREINTA)]
     public required string NombreUsuario { get; set; }
 
     [Required]
-    [StringLength(150)]
-    [EmailAddress(ErrorMessage = "Correo no válido.")]
+    [StringLength(Mensajes.MAX150)]
+    [EmailAddress(ErrorMessage = Mensajes.CORREOINVALIDO)]
     public required string Correo { get; set; }
 
     [Required]
-    [StringLength(255)]
+    [StringLength(Mensajes.MAXTREINTA)]
     public required string Contrasenia { get; set; }
 
     [Required]

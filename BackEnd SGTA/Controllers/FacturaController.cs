@@ -7,11 +7,11 @@ namespace BackEndSGTA.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class FacturaControllers : ControllerBase
+public class FacturaController : ControllerBase
 {
     private readonly AppDbContext _context;
 
-    public FacturaControllers(AppDbContext context)
+    public FacturaController(AppDbContext context)
     {
         _context = context;
     }

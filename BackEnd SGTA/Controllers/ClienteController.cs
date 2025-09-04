@@ -7,7 +7,7 @@ namespace BackEndSGTA.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class ClienteControllers : ControllerBase
+public class ClienteController : ControllerBase
 {
     private readonly AppDbContext _context;
 

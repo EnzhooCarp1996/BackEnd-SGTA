@@ -6,17 +6,22 @@ namespace BackEndSGTA.Models;
 public class Factura
 {
     public int IdFactura { get; set; }
-    public DateTime FechaRecibido { get; set; }
+    
     [DataType(DataType.Date)]
     [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
     public DateTime Fecha { get; set; }
+
     [Column("mano_de_obra_chapa")]
     public decimal ManoDeObraChapa { get; set; }
+
     [Column("mano_de_obra_pintura")]
     public decimal ManoDeObraPintura { get; set; }
+
     [Column("total_repuestos")]
     public decimal TotalRepuestos { get; set; }
+
     public int IdCliente { get; set; }
+
     [ForeignKey("IdCliente")]
     public Cliente? Cliente { get; set; }
 
