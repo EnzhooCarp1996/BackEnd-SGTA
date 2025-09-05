@@ -3,41 +3,29 @@ using BackEndSGTA.Helpers;
 
 namespace BackEndSGTA.Models;
 
-public abstract class Cliente
+public class Cliente
 {
     public int IdCliente { get; set; }
-
     [RegularExpression(@"^\d+$", ErrorMessage = Mensajes.ERRORNUMEROS)]
     [StringLength(Mensajes.MAXQUINCE, ErrorMessage = Mensajes.LIMITEDIGITOS)]
     public string? Telefono { get; set; }
-
     [RegularExpression(@"^\d+$", ErrorMessage = Mensajes.ERRORNUMEROS)]
     [StringLength(Mensajes.MAXQUINCE, ErrorMessage = Mensajes.LIMITEDIGITOS)]
     public string? Celular { get; set; }
-
-    [Required]
     public required TipoResponsabilidad Responsabilidad { get; set; }
-
-    [Required]
     public required TipoDeDocumento TipoDocumento { get; set; }
-
     [RegularExpression(@"^\d+$", ErrorMessage = Mensajes.ERRORNUMEROS)]
     [StringLength(20, ErrorMessage = Mensajes.LIMITEDIGITOS)]
-    [Required]
     public required string Documento { get; set; }
-
-    [Required]
     public TipoDeCliente TipoCliente { get; set; }
     // Campos específicos de Persona
     public string? Nombre { get; set; }
     public string? Apellido { get; set; }
-
     // Campos específicos de Empresa
     public string? RazonSocial { get; set; }
     public string? NombreDeFantasia { get; set; }
-
-    public required ICollection<Vehiculo> Vehiculos { get; set; }
-    public ICollection<Factura>? Facturas { get; set; }
+    public ICollection<Vehiculo> Vehiculos { get; set; } = new List<Vehiculo>();
+    public ICollection<Presupuesto> Presupuestos { get; set; } = new List<Presupuesto>();
 
     public enum TipoDeCliente
     {

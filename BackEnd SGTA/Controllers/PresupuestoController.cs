@@ -18,7 +18,7 @@ public class FacturaController : ControllerBase
 
     // GET: api/Facturas
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Factura>>> GetFactura()
+    public async Task<ActionResult<IEnumerable<Presupuesto>>> GetFactura()
     {
         // Trae todos los factura incluyendo Persona o Empresa
         var factura = await _context.Facturas
@@ -29,12 +29,12 @@ public class FacturaController : ControllerBase
 
     // GET: api/Facturas/5
     [HttpGet("{id}")]
-    public async Task<ActionResult<Factura>> GetfacturaById(int id)
+    public async Task<ActionResult<Presupuesto>> GetfacturaById(int id)
     {
         var factura = await _context.Facturas
                             .Include(f => f.Cliente)
-                            .FirstOrDefaultAsync(f => f.IdFactura == id);
-                            
+                            .FirstOrDefaultAsync(f => f.IdPresupuesto == id);
+
         if (factura == null)
             return NotFound();
 
@@ -43,19 +43,19 @@ public class FacturaController : ControllerBase
 
     // POST: api/Facturas
     [HttpPost]
-    public async Task<ActionResult<Factura>> Postfactura(Factura factura)
+    public async Task<ActionResult<Presupuesto>> Postfactura(Presupuesto factura)
     {
         _context.Facturas.Add(factura);
         await _context.SaveChangesAsync();
 
-        return CreatedAtAction(nameof(GetfacturaById), new { id = factura.IdFactura }, factura);
+        return CreatedAtAction(nameof(GetfacturaById), new { id = factura.IdPresupuesto }, factura);
     }
 
     // PUT: api/Facturas/5
     [HttpPut("{id}")]
-    public async Task<IActionResult> PutFactura(int id, Factura factura)
+    public async Task<IActionResult> PutFactura(int id, Presupuesto factura)
     {
-        if (id != factura.IdFactura)
+        if (id != factura.IdPresupuesto)
             return BadRequest();
 
         _context.Entry(factura).State = EntityState.Modified;
@@ -66,7 +66,7 @@ public class FacturaController : ControllerBase
         }
         catch (DbUpdateConcurrencyException)
         {
-            if (!_context.Facturas.Any(e => e.IdFactura == id))
+            if (!_context.Facturas.Any(e => e.IdPresupuesto == id))
                 return NotFound();
             else
                 throw;

@@ -33,7 +33,6 @@ namespace BackEndSGTA.Models.Configurations
 
                      builder.Property(v => v.Anio)
                             .IsRequired()
-                            .HasColumnType("year")
                             .HasColumnName("anio");
 
                      builder.Property(v => v.NroDeChasis)
@@ -46,30 +45,29 @@ namespace BackEndSGTA.Models.Configurations
                             .HasDefaultValue("No Recibido")
                             .HasColumnName("estado");
 
-                     builder.Property(e => e.FechaRecibido)
+                     builder.Property(v => v.FechaRecibido)
                            .HasColumnType("date")
                            .HasColumnName("fecha_recibido");
 
-                     builder.Property(e => e.FechaEsperada)
+                     builder.Property(v => v.FechaEsperada)
                            .HasColumnType("date")
                            .HasColumnName("fecha_esperada");
 
-                     builder.Property(e => e.FechaEntrega)
+                     builder.Property(v => v.FechaEntrega)
                            .HasColumnType("date")
                            .HasColumnName("fecha_entrega");
 
-                     builder.Property(e => e.DescripcionTrabajos)
+                     builder.Property(v => v.DescripcionTrabajos)
                            .HasColumnType("text")
                            .HasColumnName("descripcion_trabajos");
 
-                     builder.Property(e => e.IdCliente)
+                     builder.Property(v => v.IdCliente)
                            .IsRequired()
                            .HasColumnName("id_cliente");
 
                      builder.HasOne(v => v.Cliente)
                             .WithMany(c => c.Vehiculos)
-                            .HasForeignKey(v => v.IdCliente)
-                            .OnDelete(DeleteBehavior.Cascade);
+                            .HasForeignKey(v => v.IdCliente);
               }
        }
 }

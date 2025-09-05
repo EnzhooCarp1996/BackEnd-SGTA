@@ -1,28 +1,17 @@
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace BackEndSGTA.Models;
 
-public class Factura
+public class Presupuesto
 {
-    public int IdFactura { get; set; }
-    
-    [DataType(DataType.Date)]
-    [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
+    public int IdPresupuesto { get; set; }
     public DateTime Fecha { get; set; }
-
-    [Column("mano_de_obra_chapa")]
     public decimal ManoDeObraChapa { get; set; }
-
-    [Column("mano_de_obra_pintura")]
     public decimal ManoDeObraPintura { get; set; }
-
-    [Column("total_repuestos")]
     public decimal TotalRepuestos { get; set; }
-
     public int IdCliente { get; set; }
 
-    [ForeignKey("IdCliente")]
+    [JsonIgnore]
     public Cliente? Cliente { get; set; }
 
 
