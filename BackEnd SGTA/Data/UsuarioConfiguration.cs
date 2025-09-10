@@ -1,6 +1,6 @@
-using BackEndSGTA.Helpers;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.EntityFrameworkCore;
+using BackEndSGTA.Helpers;
 
 namespace BackEndSGTA.Models.Configurations;
 
@@ -8,30 +8,30 @@ public class UsuarioConfiguration : IEntityTypeConfiguration<Usuario>
 {
         public void Configure(EntityTypeBuilder<Usuario> builder)
         {
-                builder.ToTable("usuario");
+                builder.ToTable(Mensajes.MensajesUsuarios.TABLA_USUARIO);
 
                 builder.HasKey(c => c.IdUsuario);
 
                 builder.Property(c => c.IdUsuario)
                         .IsRequired()
-                        .HasColumnName("id_usuario");
+                        .HasColumnName(Mensajes.MensajesUsuarios.CAMPO_ID_USUARIO);
 
                 builder.Property(c => c.NombreUsuario)
                         .IsRequired()
-                        .HasColumnName("nombre_usuario");
+                        .HasColumnName(Mensajes.MensajesUsuarios.CAMPO_NOMBRE_USUARIO);
 
                 builder.Property(c => c.Correo)
                         .IsRequired()
-                        .HasColumnName("correo");
+                        .HasColumnName(Mensajes.MensajesUsuarios.CAMPO_CORREO);
 
-                builder.Property(u => u.Tipo)
+                builder.Property(u => u.Rol)
                         .IsRequired()
-                        .HasColumnType("enum('Admin', 'Encargado', 'Empleado')")
-                        .HasColumnName("tipo");
+                        .HasColumnType(Mensajes.MensajesUsuarios.COLUMNTYPE_ENUM)
+                        .HasColumnName(Mensajes.MensajesUsuarios.CAMPO_ROL);
 
                 builder.Property(c => c.Contrasenia)
                         .IsRequired()
-                        .HasColumnName("contrasenia");
+                        .HasColumnName(Mensajes.MensajesUsuarios.CAMPO_CONTRASENIA);
 
         }
 }

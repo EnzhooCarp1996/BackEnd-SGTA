@@ -1,5 +1,5 @@
-using BackEndSGTA.Models;
 using Microsoft.EntityFrameworkCore;
+using BackEndSGTA.Models;
 
 namespace BackEndSGTA.Data;
 
@@ -13,7 +13,7 @@ public class AppDbContext : DbContext
     public DbSet<Cliente> Clientes { get; set; }
     public DbSet<Usuario> Usuarios { get; set; }
     public DbSet<Vehiculo> Vehiculos { get; set; }
-    public DbSet<Presupuesto> Facturas { get; set; }
+    public DbSet<Presupuesto> Presupuestos { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

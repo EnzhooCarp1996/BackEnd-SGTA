@@ -1,6 +1,6 @@
-using BackEndSGTA.Helpers;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.EntityFrameworkCore;
+using BackEndSGTA.Helpers;
 
 namespace BackEndSGTA.Models.Configurations;
 
@@ -8,35 +8,35 @@ public class PresupuestoConfiguration : IEntityTypeConfiguration<Presupuesto>
 {
         public void Configure(EntityTypeBuilder<Presupuesto> builder)
         {
-                builder.ToTable("presupuesto");
+                builder.ToTable(Mensajes.MensajesPresupuestos.TABLA_PRESUPUESTO);
 
-                builder.HasKey(f => f.IdPresupuesto);
+                builder.HasKey(p => p.IdPresupuesto);
 
-                builder.Property(f => f.IdPresupuesto)
+                builder.Property(p => p.IdPresupuesto)
                         .IsRequired()
-                        .HasColumnName("id_presupuesto");
+                        .HasColumnName(Mensajes.MensajesPresupuestos.CAMPO_ID_PRESUPUESTO);
 
-                builder.Property(f => f.Fecha)
-                        .HasColumnType("date")
-                        .HasColumnName("fecha");
+                builder.Property(p => p.Fecha)
+                        .HasColumnType(Mensajes.MensajesPresupuestos.TIPO_DATE)
+                        .HasColumnName(Mensajes.MensajesPresupuestos.CAMPO_FECHA);
 
-                builder.Property(f => f.ManoDeObraChapa)
+                builder.Property(p => p.ManoDeObraChapa)
                         .IsRequired()
-                        .HasColumnName("mano_de_obra_chapa");
+                        .HasColumnName(Mensajes.MensajesPresupuestos.CAMPO_MANO_DE_OBRA_CHAPA);
 
-                builder.Property(f => f.ManoDeObraPintura)
-                        .HasColumnName("mano_de_obra_pintura");
+                builder.Property(p => p.ManoDeObraPintura)
+                        .HasColumnName(Mensajes.MensajesPresupuestos.CAMPO_MANO_DE_OBRA_PINTURA);
 
-                builder.Property(f => f.TotalRepuestos)
-                        .HasColumnName("total_repuestos");
+                builder.Property(p => p.TotalRepuestos)
+                        .HasColumnName(Mensajes.MensajesPresupuestos.CAMPO_TOTAL_REPUESTOS);
 
-                builder.Property(f => f.IdCliente)
+                builder.Property(p => p.IdCliente)
                         .IsRequired()
-                        .HasColumnName("id_cliente");
+                        .HasColumnName(Mensajes.MensajesClientes.CAMPO_ID_CLIENTE);
 
-                builder.HasOne(f => f.Cliente)
+                builder.HasOne(p => p.Cliente)
                         .WithMany(c => c.Presupuestos)
-                        .HasForeignKey(f => f.IdCliente);
+                        .HasForeignKey(p => p.IdCliente);
 
 
         }

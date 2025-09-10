@@ -1,20 +1,20 @@
-using BackEndSGTA.Data;
-using BackEndSGTA.Models;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc;
+using BackEndSGTA.Helpers;
+using BackEndSGTA.Models;
+using BackEndSGTA.Data;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BackEndSGTA.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class VehiculoController : ControllerBase
 {
     private readonly AppDbContext _context;
 
-    public VehiculoController(AppDbContext context)
-    {
-        _context = context;
-    }
+    public VehiculoController(AppDbContext context) => _context = context;
 
     // GET: api/Vehiculos
     [HttpGet]
@@ -36,7 +36,7 @@ public class VehiculoController : ControllerBase
                             .FirstOrDefaultAsync(v => v.IdVehiculo == id);
 
         if (vehiculo == null)
-            return NotFound();
+            return NotFound(new { mensaje = Mensajes.MensajesVehiculos.VEHICULONOTFOUND + id });
 
         return Ok(vehiculo);
     }
@@ -45,6 +45,7 @@ public class VehiculoController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<Vehiculo>> PostVehiculo([FromBody] Vehiculo vehiculo)
     {
+        // FluentValidation se ejecuta automáticamente antes de entrar aquí
         _context.Vehiculos.Add(vehiculo);
         await _context.SaveChangesAsync();
 
@@ -56,37 +57,35 @@ public class VehiculoController : ControllerBase
     public async Task<IActionResult> PutVehiculo(int id, [FromBody] Vehiculo vehiculo)
     {
         if (id != vehiculo.IdVehiculo)
-            return BadRequest();
+            return BadRequest(Mensajes.MensajesVehiculos.VEHICULONOENCONTRADO);
 
-        _context.Entry(vehiculo).State = EntityState.Modified;
+        // Verificar que el vehiculo exista
+        var vehiculoExistente = await _context.Vehiculos.FindAsync(id);
 
-        try
-        {
-            await _context.SaveChangesAsync();
-        }
-        catch (DbUpdateConcurrencyException)
-        {
-            if (!_context.Vehiculos.Any(e => e.IdVehiculo == id))
-                return NotFound();
-            else
-                throw;
-        }
+        if (vehiculoExistente == null)
+            return NotFound(new { mensaje = Mensajes.MensajesVehiculos.VEHICULONOTFOUND + id });
+
+        // Copiar los campos modificables
+        _context.Entry(vehiculoExistente).CurrentValues.SetValues(vehiculo);
+
+        await _context.SaveChangesAsync();
 
         return NoContent();
     }
 
-    // DELETE: api/Vehiculos/5
+    // DELETE: api/Vehiculo/5
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteVehiculo(int id)
     {
         var vehiculo = await _context.Vehiculos.FindAsync(id);
+
         if (vehiculo == null)
-            return NotFound();
+            return NotFound(new { mensaje = Mensajes.MensajesVehiculos.VEHICULONOTFOUND + id });
 
         _context.Vehiculos.Remove(vehiculo);
         await _context.SaveChangesAsync();
 
-        return NoContent();
+        return Ok(Mensajes.MensajesVehiculos.VEHICULOELIMINADO + id);
     }
 }
 

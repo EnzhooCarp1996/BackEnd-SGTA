@@ -1,92 +1,91 @@
-using BackEndSGTA.Data;
-using BackEndSGTA.Models;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc;
+using BackEndSGTA.Helpers;
+using BackEndSGTA.Models;
+using BackEndSGTA.Data;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BackEndSGTA.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class FacturaController : ControllerBase
+[Authorize]
+public class PresupuestoController : ControllerBase
 {
     private readonly AppDbContext _context;
 
-    public FacturaController(AppDbContext context)
-    {
-        _context = context;
-    }
+    public PresupuestoController(AppDbContext context) => _context = context;
 
-    // GET: api/Facturas
+    // GET: api/Presupuestos
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Presupuesto>>> GetFactura()
     {
-        // Trae todos los factura incluyendo Persona o Empresa
-        var factura = await _context.Facturas
-                            .Include(f => f.Cliente)   // incluye cliente
+        // Trae todos los presupuestos
+        var presupuesto = await _context.Presupuestos
+                            .Include(f => f.Cliente)   // trae datos del cliente
                             .ToListAsync();
-        return Ok(factura);
+        return Ok(presupuesto);
     }
 
-    // GET: api/Facturas/5
+    // GET: api/Presupuestos/5
     [HttpGet("{id}")]
     public async Task<ActionResult<Presupuesto>> GetfacturaById(int id)
     {
-        var factura = await _context.Facturas
+        var presupuesto = await _context.Presupuestos
                             .Include(f => f.Cliente)
                             .FirstOrDefaultAsync(f => f.IdPresupuesto == id);
 
-        if (factura == null)
-            return NotFound();
+        if (presupuesto == null)
+            return NotFound(new { mensaje = Mensajes.MensajesPresupuestos.PRESUPUESTONOTFOUND + id });
 
-        return Ok(factura);
+        return Ok(presupuesto);
     }
 
-    // POST: api/Facturas
+    // POST: api/Presupuestos
     [HttpPost]
-    public async Task<ActionResult<Presupuesto>> Postfactura(Presupuesto factura)
+    public async Task<ActionResult<Presupuesto>> Postfactura(Presupuesto presupuesto)
     {
-        _context.Facturas.Add(factura);
+        // FluentValidation se ejecuta automáticamente antes de entrar aquí
+        _context.Presupuestos.Add(presupuesto);
         await _context.SaveChangesAsync();
 
-        return CreatedAtAction(nameof(GetfacturaById), new { id = factura.IdPresupuesto }, factura);
+        return CreatedAtAction(nameof(GetfacturaById), new { id = presupuesto.IdPresupuesto }, presupuesto);
     }
 
     // PUT: api/Facturas/5
     [HttpPut("{id}")]
-    public async Task<IActionResult> PutFactura(int id, Presupuesto factura)
+    public async Task<IActionResult> PutPresupuesto(int id, Presupuesto presupuesto)
     {
-        if (id != factura.IdPresupuesto)
-            return BadRequest();
+        if (id != presupuesto.IdPresupuesto)
+            return BadRequest(Mensajes.MensajesPresupuestos.PRESUPUESTONOENCONTRADO);
 
-        _context.Entry(factura).State = EntityState.Modified;
+        // Verificar que el presupuesto exista
+        var presupuestoExistente = await _context.Presupuestos.FindAsync(id);
 
-        try
-        {
-            await _context.SaveChangesAsync();
-        }
-        catch (DbUpdateConcurrencyException)
-        {
-            if (!_context.Facturas.Any(e => e.IdPresupuesto == id))
-                return NotFound();
-            else
-                throw;
-        }
+        if (presupuestoExistente == null)
+            return NotFound(new { mensaje = Mensajes.MensajesPresupuestos.PRESUPUESTONOTFOUND + id });
+
+        // Copiar los campos modificables
+        _context.Entry(presupuestoExistente).CurrentValues.SetValues(presupuesto);
+
+        await _context.SaveChangesAsync();
 
         return NoContent();
     }
 
-    // DELETE: api/Facturas/5
+    // DELETE: api/Presupuesto/5
     [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteFactura(int id)
+    public async Task<IActionResult> DeletePresupuesto(int id)
     {
-        var factura = await _context.Facturas.FindAsync(id);
-        if (factura == null)
-            return NotFound();
+        var presupuesto = await _context.Presupuestos.FindAsync(id);
 
-        _context.Facturas.Remove(factura);
+        if (presupuesto == null)
+            return NotFound(new { mensaje = Mensajes.MensajesPresupuestos.PRESUPUESTONOTFOUND + id });
+
+        _context.Presupuestos.Remove(presupuesto);
         await _context.SaveChangesAsync();
 
-        return NoContent();
+        return Ok(Mensajes.MensajesPresupuestos.PRESUPUESTOELIMINADO + id);
     }
 }
 

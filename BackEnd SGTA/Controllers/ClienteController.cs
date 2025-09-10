@@ -1,22 +1,20 @@
-using BackEndSGTA.Data;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc;
 using BackEndSGTA.Helpers;
 using BackEndSGTA.Models;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using static BackEndSGTA.Models.Cliente;
+using BackEndSGTA.Data;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BackEndSGTA.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class ClienteController : ControllerBase
 {
     private readonly AppDbContext _context;
 
-    public ClienteController(AppDbContext context)
-    {
-        _context = context;
-    }
+    public ClienteController(AppDbContext context) => _context = context;
 
     // GET: api/Cliente
     [HttpGet]
@@ -34,7 +32,7 @@ public class ClienteController : ControllerBase
 
     // GET: api/Cliente/5
     [HttpGet("{id}")]
-    public async Task<ActionResult<Cliente>> GetCliente(int id)
+    public async Task<ActionResult<Cliente>> GetClienteById(int id)
     {
         var cliente = await _context.Clientes
             .Include(c => c.Vehiculos)
@@ -43,7 +41,7 @@ public class ClienteController : ControllerBase
             .FirstOrDefaultAsync(c => c.IdCliente == id);
 
         if (cliente == null)
-            return NotFound();
+            return NotFound(new { mensaje = Mensajes.MensajesClientes.CLIENTENOTFOUND + id });
 
         return Ok(cliente);
     }
@@ -52,38 +50,32 @@ public class ClienteController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<Cliente>> PostCliente([FromBody] Cliente cliente)
     {
-        var error = ValidarCliente(cliente);
-        if (error != null)
-            return BadRequest(error);
-
+        // FluentValidation se ejecuta automáticamente antes de entrar aquí
         _context.Clientes.Add(cliente);
         await _context.SaveChangesAsync();
 
-        return CreatedAtAction(nameof(GetCliente), new { id = cliente.IdCliente }, cliente);
+        return CreatedAtAction(nameof(GetClienteById), new { id = cliente.IdCliente }, cliente);
     }
 
 
-    // PUT: api/Cliente/5
+    // PUT: api/cliente/5
     [HttpPut("{id}")]
     public async Task<IActionResult> PutCliente(int id, [FromBody] Cliente cliente)
     {
-        // Asignar el Id de la URL al objeto recibido
-        cliente.IdCliente = id;
+        if (id != cliente.IdCliente)
+            return BadRequest(Mensajes.MensajesClientes.CLIENTENOENCONTRADO);
 
-        // Validación de existencia
+        // Verificar que el cliente exista
         var clienteExistente = await _context.Clientes.FindAsync(id);
+
         if (clienteExistente == null)
-            return NotFound(Mensajes.MensajesClientes.CLIENTENOTFOUND + id);
+            return NotFound(new { mensaje = Mensajes.MensajesClientes.CLIENTENOTFOUND + id });
 
-        // Validación de campos
-        var error = ValidarCliente(cliente, esActualizacion: true);
-        if (error != null)
-            return BadRequest(error);
-
-        // Actualizar los campos
+        // Copiar los campos modificables
         _context.Entry(clienteExistente).CurrentValues.SetValues(cliente);
 
         await _context.SaveChangesAsync();
+
         return NoContent();
     }
 
@@ -96,59 +88,13 @@ public class ClienteController : ControllerBase
         var cliente = await _context.Clientes.FindAsync(id);
 
         if (cliente == null)
-            return NotFound(Mensajes.MensajesClientes.CLIENTENOTFOUND + id);
+            return NotFound(new { mensaje = Mensajes.MensajesClientes.CLIENTENOTFOUND + id });
 
         _context.Clientes.Remove(cliente);
         await _context.SaveChangesAsync();
 
-        return Ok(Mensajes.MensajesClientes.CLIENTEOK + id);
+        return Ok(Mensajes.MensajesClientes.CLIENTEELIMINADO + id);
     }
 
 
-
-    // Método auxiliar de validación
-    private string? ValidarCliente(Cliente cliente, bool esActualizacion = false)
-    {
-        // Validar persona vs empresa
-        if (cliente.TipoCliente == TipoDeCliente.Persona)
-        {
-            if (!string.IsNullOrEmpty(cliente.RazonSocial) || !string.IsNullOrEmpty(cliente.NombreDeFantasia))
-                return Mensajes.MensajesClientes.VALIDARPERSONA;
-
-            if (cliente.TipoDocumento != TipoDeDocumento.DNI)
-                return Mensajes.MensajesClientes.VALIDARDNI;
-        }
-        else // Empresa o Monotributista
-        {
-            if (!string.IsNullOrEmpty(cliente.Nombre) || !string.IsNullOrEmpty(cliente.Apellido))
-                return Mensajes.MensajesClientes.VALIDAREMPRESA;
-
-            if (cliente.TipoDocumento != TipoDeDocumento.CUIT)
-                return Mensajes.MensajesClientes.VALIDAREMPRESA;
-        }
-
-        // Validar duplicados en documento
-        bool existe;
-        if (esActualizacion)
-        {
-            // Ignorar el mismo cliente en PUT
-            existe = _context.Clientes.Any(c => c.Documento == cliente.Documento && c.IdCliente != cliente.IdCliente);
-        }
-        else
-        {
-            existe = _context.Clientes.Any(c => c.Documento == cliente.Documento);
-        }
-
-        if (existe)
-            return Mensajes.MensajesClientes.CLIENTEREPETIDO;
-
-        // Todo ok
-        return null;
-    }
-
-
-    // Métodos de chequeo de formato (pueden ser regex más completos)
-    private bool EsDNI(string documento) => documento.All(char.IsDigit) && documento.Length == 8;
-
-    private bool EsCUIT(string documento) => documento.Replace("-", "").All(char.IsDigit) && documento.Length == 11;
 }

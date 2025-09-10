@@ -1,6 +1,6 @@
-using BackEndSGTA.Helpers;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.EntityFrameworkCore;
+using BackEndSGTA.Helpers;
 
 namespace BackEndSGTA.Models.Configurations;
 
@@ -13,6 +13,7 @@ public class ClienteConfiguration : IEntityTypeConfiguration<Cliente>
               builder.HasKey(c => c.IdCliente);
 
               builder.Property(c => c.IdCliente)
+                     .ValueGeneratedOnAdd()
                      .HasColumnName(Mensajes.MensajesClientes.CAMPO_ID_CLIENTE);
 
               builder.Property(c => c.TipoCliente)

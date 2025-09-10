@@ -1,21 +1,13 @@
-using System.ComponentModel.DataAnnotations;
-using BackEndSGTA.Helpers;
 
 namespace BackEndSGTA.Models;
 
 public class Cliente
 {
     public int IdCliente { get; set; }
-    [RegularExpression(@"^\d+$", ErrorMessage = Mensajes.ERRORNUMEROS)]
-    [StringLength(Mensajes.MAXQUINCE, ErrorMessage = Mensajes.LIMITEDIGITOS)]
     public string? Telefono { get; set; }
-    [RegularExpression(@"^\d+$", ErrorMessage = Mensajes.ERRORNUMEROS)]
-    [StringLength(Mensajes.MAXQUINCE, ErrorMessage = Mensajes.LIMITEDIGITOS)]
     public string? Celular { get; set; }
     public required TipoResponsabilidad Responsabilidad { get; set; }
     public required TipoDeDocumento TipoDocumento { get; set; }
-    [RegularExpression(@"^\d+$", ErrorMessage = Mensajes.ERRORNUMEROS)]
-    [StringLength(20, ErrorMessage = Mensajes.LIMITEDIGITOS)]
     public required string Documento { get; set; }
     public TipoDeCliente TipoCliente { get; set; }
     // Campos específicos de Persona
@@ -33,7 +25,6 @@ public class Cliente
         Empresa
     }
 
-
     public enum TipoDeDocumento
     {
         DNI,
@@ -47,7 +38,6 @@ public class Cliente
         Monotributista,
         ResponsableInscripto
     }
-
 
 
 }

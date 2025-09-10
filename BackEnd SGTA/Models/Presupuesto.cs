@@ -14,9 +14,6 @@ public class Presupuesto
     [JsonIgnore]
     public Cliente? Cliente { get; set; }
 
-
-
-
 }
 
 /* 
