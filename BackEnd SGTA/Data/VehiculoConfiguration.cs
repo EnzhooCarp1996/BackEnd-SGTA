@@ -62,12 +62,12 @@ namespace BackEndSGTA.Models.Configurations
                            .HasColumnName(Mensajes.MensajesVehiculos.CAMPO_DESCRIPCION_TRABAJOS);
 
                      builder.Property(v => v.IdCliente)
-                           .IsRequired()
                            .HasColumnName(Mensajes.MensajesClientes.CAMPO_ID_CLIENTE);
 
                      builder.HasOne(v => v.Cliente)
                             .WithMany(c => c.Vehiculos)
-                            .HasForeignKey(v => v.IdCliente);
+                            .HasForeignKey(v => v.IdCliente)
+                            .OnDelete(DeleteBehavior.SetNull);
               }
        }
 }

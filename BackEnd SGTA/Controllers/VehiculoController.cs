@@ -4,6 +4,8 @@ using BackEndSGTA.Helpers;
 using BackEndSGTA.Models;
 using BackEndSGTA.Data;
 using Microsoft.AspNetCore.Authorization;
+using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace BackEndSGTA.Controllers;
 
@@ -13,17 +15,20 @@ namespace BackEndSGTA.Controllers;
 public class VehiculoController : ControllerBase
 {
     private readonly AppDbContext _context;
+    private readonly HttpClient _httpClient;
 
-    public VehiculoController(AppDbContext context) => _context = context;
+    public VehiculoController(AppDbContext context, IHttpClientFactory httpClientFactory)
+    {
+        _context = context;
+        _httpClient = httpClientFactory.CreateClient();
+    }
 
     // GET: api/Vehiculos
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Vehiculo>>> GetVehiculos()
     {
         // Trae todos los vehiculos
-        var vehiculos = await _context.Vehiculos
-                                .Include(v => v.Cliente)   // trae datos del cliente
-                                .ToListAsync();
+        var vehiculos = await _context.Vehiculos.ToListAsync();
         return Ok(vehiculos);
     }
 
@@ -31,9 +36,7 @@ public class VehiculoController : ControllerBase
     [HttpGet("{id}")]
     public async Task<ActionResult<Vehiculo>> GetVehiculoById(int id)
     {
-        var vehiculo = await _context.Vehiculos
-                            .Include(v => v.Cliente)
-                            .FirstOrDefaultAsync(v => v.IdVehiculo == id);
+        var vehiculo = await _context.Vehiculos.FirstOrDefaultAsync(v => v.IdVehiculo == id);
 
         if (vehiculo == null)
             return NotFound(new { mensaje = Mensajes.MensajesVehiculos.VEHICULONOTFOUND + id });
@@ -42,9 +45,14 @@ public class VehiculoController : ControllerBase
     }
 
     // POST: api/Vehiculos
+    [Authorize(Roles = "Admin,Encargado")]
     [HttpPost]
     public async Task<ActionResult<Vehiculo>> PostVehiculo([FromBody] Vehiculo vehiculo)
     {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState); // esto devuelve los errores exactos de validación
+        }
         // FluentValidation se ejecuta automáticamente antes de entrar aquí
         _context.Vehiculos.Add(vehiculo);
         await _context.SaveChangesAsync();
@@ -53,6 +61,7 @@ public class VehiculoController : ControllerBase
     }
 
     // PUT: api/Vehiculos/5
+    [Authorize(Roles = "Admin,Encargado")]
     [HttpPut("{id}")]
     public async Task<IActionResult> PutVehiculo(int id, [FromBody] Vehiculo vehiculo)
     {
@@ -74,6 +83,7 @@ public class VehiculoController : ControllerBase
     }
 
     // DELETE: api/Vehiculo/5
+    [Authorize(Roles = "Admin,Encargado")]
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteVehiculo(int id)
     {
@@ -86,6 +96,42 @@ public class VehiculoController : ControllerBase
         await _context.SaveChangesAsync();
 
         return Ok(Mensajes.MensajesVehiculos.VEHICULOELIMINADO + id);
+    }
+
+    //----------------------------------------------------------------------------------------------------------------
+
+    // GET: api/Vehiculo/marcas
+    [HttpGet("marcas")]
+    public async Task<IActionResult> GetMarcas()
+    {
+        try
+        {
+            var response = await _httpClient.GetAsync("https://www.carqueryapi.com/api/0.3/?cmd=getMakes");
+            response.EnsureSuccessStatusCode();
+            var content = await response.Content.ReadAsStringAsync();
+            return Ok(content);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { mensaje = "No se pudieron cargar las marcas", error = ex.Message });
+        }
+    }
+
+    // GET: api/Vehiculo/modelos/{marca}
+    [HttpGet("modelos/{marca}")]
+    public async Task<IActionResult> GetModelos(string marca)
+    {
+        try
+        {
+            var response = await _httpClient.GetAsync($"https://www.carqueryapi.com/api/0.3/?cmd=getModels&make={marca}");
+            response.EnsureSuccessStatusCode();
+            var content = await response.Content.ReadAsStringAsync();
+            return Ok(content);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { mensaje = "No se pudieron cargar los modelos", error = ex.Message });
+        }
     }
 }
 

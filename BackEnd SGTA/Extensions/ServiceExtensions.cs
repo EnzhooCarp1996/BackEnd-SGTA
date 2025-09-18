@@ -1,12 +1,13 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
 using FluentValidation.AspNetCore;
 using BackEndSGTA.Services;
 using BackEndSGTA.Data;
 using FluentValidation;
+using System.Text.Json;
 using System.Text;
-using System.Text.Json.Serialization;
 
 namespace BackEndSGTA.Extensions;
 
@@ -30,6 +31,7 @@ public static class ServiceExtensions
                     .AddJsonOptions(options =>
                     {
                         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+                        options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
                     });
 
         // FluentValidation
@@ -42,10 +44,10 @@ public static class ServiceExtensions
         // CORS
         services.AddCors(options =>
         {
-            options.AddPolicy("AllowAll", policy =>
+            options.AddPolicy("DevCors", policy =>
                 policy.AllowAnyOrigin()
-                      .AllowAnyMethod()
-                      .AllowAnyHeader());
+                    .AllowAnyHeader()
+                    .AllowAnyMethod());
         });
 
         // Swagger
@@ -61,6 +63,7 @@ public static class ServiceExtensions
         });
 
         services.AddScoped<TokenService>();
+        services.AddScoped<PasswordService>();
 
 
         // JWT
@@ -81,5 +84,8 @@ public static class ServiceExtensions
             });
 
         services.AddAuthorization();
+
+        // HttpClient para llamadas externas
+        services.AddHttpClient();
     }
 }

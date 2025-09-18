@@ -15,7 +15,7 @@ public class Vehiculo
     public DateTime? FechaEsperada { get; set; }
     public DateTime? FechaEntrega { get; set; }
     public string? DescripcionTrabajos { get; set; }
-    public int IdCliente { get; set; }
+    public int? IdCliente { get; set; }
 
     [JsonIgnore]
     public Cliente? Cliente { get; set; }

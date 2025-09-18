@@ -31,12 +31,12 @@ public class PresupuestoConfiguration : IEntityTypeConfiguration<Presupuesto>
                         .HasColumnName(Mensajes.MensajesPresupuestos.CAMPO_TOTAL_REPUESTOS);
 
                 builder.Property(p => p.IdCliente)
-                        .IsRequired()
                         .HasColumnName(Mensajes.MensajesClientes.CAMPO_ID_CLIENTE);
 
                 builder.HasOne(p => p.Cliente)
                         .WithMany(c => c.Presupuestos)
-                        .HasForeignKey(p => p.IdCliente);
+                        .HasForeignKey(p => p.IdCliente)
+                        .OnDelete(DeleteBehavior.SetNull);
 
 
         }

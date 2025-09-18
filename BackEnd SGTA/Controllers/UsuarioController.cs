@@ -15,11 +15,14 @@ public class UsuarioController : ControllerBase
 {
     private readonly AppDbContext _context;
     private readonly TokenService _tokenService;
+    private readonly PasswordService _passwordService;
 
-    public UsuarioController(AppDbContext context, TokenService tokenService)
+
+    public UsuarioController(AppDbContext context, TokenService tokenService, PasswordService passwordService)
     {
         _context = context;
         _tokenService = tokenService;
+        _passwordService = passwordService;
     }
 
     // GET: api/Usuarios
@@ -44,6 +47,7 @@ public class UsuarioController : ControllerBase
     }
 
     // POST: api/Usuario
+    [Authorize(Roles = "Admin,Encargado")]
     [HttpPost]
     public async Task<ActionResult<Usuario>> PostUsuario(Usuario usuario)
     {
@@ -52,7 +56,7 @@ public class UsuarioController : ControllerBase
         {
             NombreUsuario = usuario.NombreUsuario,
             Correo = usuario.Correo,
-            Contrasenia = _tokenService.EncriptarSHA256(usuario.Contrasenia),
+            Contrasenia = _passwordService.HashPassword(usuario, usuario.Contrasenia),
             Rol = usuario.Rol
         };
 
@@ -63,6 +67,7 @@ public class UsuarioController : ControllerBase
     }
 
     // PUT: api/Usuarios/5
+    [Authorize(Roles = "Admin,Encargado")]
     [HttpPut("{id}")]
     public async Task<IActionResult> PutUsuario(int id, [FromBody] Usuario usuario)
     {
@@ -70,13 +75,21 @@ public class UsuarioController : ControllerBase
             return BadRequest(Mensajes.MensajesUsuarios.USUARIONOENCONTRADO);
 
         // Verificar que el usuario exista
-        var usuarioExistente = await _context.Clientes.FindAsync(id);
+        var usuarioExistente = await _context.Usuarios.FindAsync(id);
 
         if (usuarioExistente == null)
             return NotFound(new { mensaje = Mensajes.MensajesUsuarios.USUARIONOTFOUND + id });
 
-        // Copiar los campos modificables
-        _context.Entry(usuarioExistente).CurrentValues.SetValues(usuario);
+        // Actualizar campos modificables
+        usuarioExistente.NombreUsuario = usuario.NombreUsuario;
+        usuarioExistente.Correo = usuario.Correo;
+        usuarioExistente.Rol = usuario.Rol;
+
+        // Solo si se envía nueva contraseña
+        if (!string.IsNullOrEmpty(usuario.Contrasenia))
+        {
+            usuarioExistente.Contrasenia = _passwordService.HashPassword(usuarioExistente, usuario.Contrasenia);
+        }
 
         await _context.SaveChangesAsync();
 
@@ -84,6 +97,7 @@ public class UsuarioController : ControllerBase
     }
 
     // DELETE: api/Usuarios/5
+    [Authorize(Roles = "Admin,Encargado")]
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteUsuario(int id)
     {

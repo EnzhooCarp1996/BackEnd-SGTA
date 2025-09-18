@@ -7,9 +7,9 @@ public class Presupuesto
     public int IdPresupuesto { get; set; }
     public DateTime Fecha { get; set; }
     public decimal ManoDeObraChapa { get; set; }
-    public decimal ManoDeObraPintura { get; set; }
-    public decimal TotalRepuestos { get; set; }
-    public int IdCliente { get; set; }
+    public decimal? ManoDeObraPintura { get; set; }
+    public decimal? TotalRepuestos { get; set; }
+    public int? IdCliente { get; set; }
 
     [JsonIgnore]
     public Cliente? Cliente { get; set; }

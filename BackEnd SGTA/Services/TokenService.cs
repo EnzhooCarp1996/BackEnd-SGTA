@@ -8,7 +8,7 @@ using System.Text;
 
 namespace BackEndSGTA.Services;
 
-public class TokenService : ITokenService
+public class TokenService
 {
     private readonly IConfiguration _config;
 
@@ -34,7 +34,8 @@ public class TokenService : ITokenService
                             new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds().ToString()),
                 new Claim("IdUsuario", usuario.IdUsuario.ToString()),
                 new Claim("NombreUsuario", usuario.NombreUsuario ?? string.Empty),
-                new Claim("Contrasenia", usuario.Contrasenia ?? string.Empty)
+                new Claim("Contrasenia", usuario.Contrasenia ?? string.Empty),
+                new Claim(ClaimTypes.Role, usuario.Rol.ToString())
             };
 
         var key = new SymmetricSecurityKey(

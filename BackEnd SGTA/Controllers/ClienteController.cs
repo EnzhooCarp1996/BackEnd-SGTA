@@ -47,6 +47,7 @@ public class ClienteController : ControllerBase
     }
 
     // POST: api/Cliente
+    [Authorize(Roles = "Admin,Encargado")]
     [HttpPost]
     public async Task<ActionResult<Cliente>> PostCliente([FromBody] Cliente cliente)
     {
@@ -59,6 +60,7 @@ public class ClienteController : ControllerBase
 
 
     // PUT: api/cliente/5
+    [Authorize(Roles = "Admin,Encargado")]
     [HttpPut("{id}")]
     public async Task<IActionResult> PutCliente(int id, [FromBody] Cliente cliente)
     {

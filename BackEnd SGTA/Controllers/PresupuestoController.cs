@@ -21,9 +21,7 @@ public class PresupuestoController : ControllerBase
     public async Task<ActionResult<IEnumerable<Presupuesto>>> GetFactura()
     {
         // Trae todos los presupuestos
-        var presupuesto = await _context.Presupuestos
-                            .Include(f => f.Cliente)   // trae datos del cliente
-                            .ToListAsync();
+        var presupuesto = await _context.Presupuestos.ToListAsync();
         return Ok(presupuesto);
     }
 
@@ -31,9 +29,7 @@ public class PresupuestoController : ControllerBase
     [HttpGet("{id}")]
     public async Task<ActionResult<Presupuesto>> GetfacturaById(int id)
     {
-        var presupuesto = await _context.Presupuestos
-                            .Include(f => f.Cliente)
-                            .FirstOrDefaultAsync(f => f.IdPresupuesto == id);
+        var presupuesto = await _context.Presupuestos.FirstOrDefaultAsync(f => f.IdPresupuesto == id);
 
         if (presupuesto == null)
             return NotFound(new { mensaje = Mensajes.MensajesPresupuestos.PRESUPUESTONOTFOUND + id });
@@ -42,6 +38,7 @@ public class PresupuestoController : ControllerBase
     }
 
     // POST: api/Presupuestos
+    [Authorize(Roles = "Admin,Encargado")]
     [HttpPost]
     public async Task<ActionResult<Presupuesto>> Postfactura(Presupuesto presupuesto)
     {
@@ -52,7 +49,8 @@ public class PresupuestoController : ControllerBase
         return CreatedAtAction(nameof(GetfacturaById), new { id = presupuesto.IdPresupuesto }, presupuesto);
     }
 
-    // PUT: api/Facturas/5
+    // PUT: api/Presupuestos/5
+    [Authorize(Roles = "Admin,Encargado")]
     [HttpPut("{id}")]
     public async Task<IActionResult> PutPresupuesto(int id, Presupuesto presupuesto)
     {
@@ -74,6 +72,7 @@ public class PresupuestoController : ControllerBase
     }
 
     // DELETE: api/Presupuesto/5
+    [Authorize(Roles = "Admin,Encargado")]
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeletePresupuesto(int id)
     {

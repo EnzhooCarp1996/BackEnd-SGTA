@@ -87,25 +87,23 @@ public class VehiculoValidator : AbstractValidator<Vehiculo>
 
         // Cliente relacionado: obligatorio
         RuleFor(p => p.IdCliente)
-            .NotEmpty().WithMessage(Mensajes.MensajesPresupuestos.CLIENTEOBLIGATORIO)
-            .GreaterThan(0).WithMessage(Mensajes.MensajesVehiculos.MENSAJECLIENTEVALIDO)
-            .MustAsync(async (id, cancellation) =>
-                await _context.Clientes.AnyAsync(c => c.IdCliente == id, cancellation))
-            .WithMessage(Mensajes.MensajesVehiculos.CLIENTENOTFOUND);
+            .GreaterThan(0).WithMessage(Mensajes.MensajesVehiculos.MENSAJECLIENTEVALIDO);
+
     }
 
     private bool PatenteDuplicada(Vehiculo vehiculo)
     {
+        // Si es un vehiculo nuevo (IdVehiculo = 0), compara con todos
         return _context.Vehiculos.Any(v =>
             v.Patente == vehiculo.Patente &&
-            v.IdVehiculo != vehiculo.IdVehiculo); // ignorar el mismo en PUT
+            (vehiculo.IdVehiculo == 0 || v.IdVehiculo != vehiculo.IdVehiculo));
     }
 
     private bool ChasisDuplicado(Vehiculo vehiculo)
     {
         return _context.Vehiculos.Any(v =>
             v.NroDeChasis == vehiculo.NroDeChasis &&
-            v.IdVehiculo != vehiculo.IdVehiculo); // ignorar el mismo en PUT
+            (vehiculo.IdVehiculo == 0 || v.IdVehiculo != vehiculo.IdVehiculo));
     }
 
 }
