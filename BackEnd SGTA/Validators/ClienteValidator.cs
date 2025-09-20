@@ -13,15 +13,15 @@ public class ClienteValidator : AbstractValidator<Cliente>
         _context = context;
 
         RuleFor(c => c.Telefono)
-            .Matches(@"^\d+$").WithMessage(Mensajes.MensajesClientes.ERRORNUMEROS)
+            .Matches(@"^[0-9\-]+$").WithMessage(Mensajes.MensajesClientes.ERRORNUMEROS)
             .MaximumLength(Mensajes.MensajesClientes.MAXQUINCE).WithMessage(Mensajes.MensajesClientes.LIMITEDIGITOS);
 
         RuleFor(c => c.Celular)
-            .Matches(@"^\d+$").WithMessage(Mensajes.MensajesClientes.ERRORNUMEROS)
+            .Matches(@"^[0-9\-]+$").WithMessage(Mensajes.MensajesClientes.ERRORNUMEROS)
             .MaximumLength(Mensajes.MensajesClientes.MAXQUINCE).WithMessage(Mensajes.MensajesClientes.LIMITEDIGITOS);
 
         RuleFor(c => c.Documento)
-            .Matches(@"^\d+$").WithMessage(Mensajes.MensajesClientes.ERRORNUMEROS)
+            .Matches(@"^[0-9\-]+$").WithMessage(Mensajes.MensajesClientes.ERRORNUMEROS)
             .MaximumLength(Mensajes.MensajesClientes.MAXVEINTE).WithMessage(Mensajes.MensajesClientes.LIMITEDIGITOS);
 
         // Validación de duplicado en documento
@@ -40,13 +40,20 @@ public class ClienteValidator : AbstractValidator<Cliente>
                 .Empty().WithMessage(Mensajes.MensajesClientes.VALIDARDATOSPERSONA);
 
             RuleFor(c => c.TipoDocumento)
-                .Must(tipo => tipo == TipoDeDocumento.DNI || tipo == TipoDeDocumento.CUIT)
+                .Must((cliente, tipo) =>
+                    (cliente.Responsabilidad == TipoResponsabilidad.ConsumidorFinal &&
+                        (tipo == TipoDeDocumento.DNI || tipo == TipoDeDocumento.CUIL))
+                    ||
+                    (cliente.Responsabilidad == TipoResponsabilidad.Monotributista &&
+                        (tipo == TipoDeDocumento.CUIT))
+                )
                 .WithMessage(cliente => cliente.Responsabilidad switch
                 {
                     TipoResponsabilidad.ConsumidorFinal => Mensajes.MensajesClientes.VALIDARDNI,
                     TipoResponsabilidad.Monotributista => Mensajes.MensajesClientes.VALIDARCUIT,
-                    _ => ""
+                    _ => Mensajes.MensajesClientes.VALIDARCUIT
                 });
+
         });
 
         When(c => c.TipoCliente == TipoDeCliente.Empresa, () =>

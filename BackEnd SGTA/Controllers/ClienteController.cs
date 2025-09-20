@@ -95,7 +95,7 @@ public class ClienteController : ControllerBase
         _context.Clientes.Remove(cliente);
         await _context.SaveChangesAsync();
 
-        return Ok(Mensajes.MensajesClientes.CLIENTEELIMINADO + id);
+        return NoContent();
     }
 
 

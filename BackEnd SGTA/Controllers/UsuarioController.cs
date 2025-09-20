@@ -109,7 +109,7 @@ public class UsuarioController : ControllerBase
         _context.Usuarios.Remove(usuario);
         await _context.SaveChangesAsync();
 
-        return Ok(Mensajes.MensajesUsuarios.USUARIOELIMINADO + id);
+        return NoContent();
     }
 
 }

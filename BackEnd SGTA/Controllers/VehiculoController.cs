@@ -95,7 +95,7 @@ public class VehiculoController : ControllerBase
         _context.Vehiculos.Remove(vehiculo);
         await _context.SaveChangesAsync();
 
-        return Ok(Mensajes.MensajesVehiculos.VEHICULOELIMINADO + id);
+        return NoContent();
     }
 
     //----------------------------------------------------------------------------------------------------------------

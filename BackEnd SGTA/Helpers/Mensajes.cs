@@ -18,7 +18,6 @@ public abstract class Mensajes
         public const string CLIENTEREPETIDO = "Ya existe un Cliente con ese documento.";
         public const string CLIENTENOENCONTRADO = "El ID del Cliente no coincide.";
         public const string CLIENTENOTFOUND = "No se encontró el Cliente con Id: ";
-        public const string CLIENTEELIMINADO = "Se elimino correctamente el Cliente con Id: ";
         public const string ERRORNUMEROS = "Solo debe contener números.";
         public const string LIMITEDIGITOS = "No puede tener más de 15 dígitos.";
 
@@ -48,7 +47,6 @@ public abstract class Mensajes
     {
         public const string PRESUPUESTONOENCONTRADO = "El ID del Presupuesto no coincide.";
         public const string PRESUPUESTONOTFOUND = "No se encontró el Presupuesto con Id: ";
-        public const string PRESUPUESTOELIMINADO = "Se elimino correctamente el Presupuesto con Id: ";
         public const string TABLA_PRESUPUESTO = "presupuesto";
         public const string CAMPO_ID_PRESUPUESTO = "id_presupuesto";
         public const string TIPO_DATE = "date";
@@ -69,7 +67,6 @@ public abstract class Mensajes
     {
         public const string USUARIONOENCONTRADO = "El ID del Usuario no coincide.";
         public const string USUARIONOTFOUND = "No se encontró el Usuario con Id: ";
-        public const string USUARIOELIMINADO = "Se elimino correctamente el Usuario con Id: ";
         public const string USUARIOOBLIGATORIO = "El nombre de usuario es obligatorio.";
         public const string MENSAJEUSUARIO = "El nombre de usuario no puede superar 30 caracteres.";
         public const string CORREOOBLIGATORIO = "El correo es obligatorio.";
@@ -96,7 +93,6 @@ public abstract class Mensajes
     {
         public const string VEHICULONOENCONTRADO = "El ID del Vehiculo no coincide.";
         public const string VEHICULONOTFOUND = "No se encontró el Vehiculo con Id: ";
-        public const string VEHICULOELIMINADO = "Se elimino correctamente el Vehiculo con Id: ";
         public const string TABLAVEHICULO = "VEHICULO";
         public const string CAMPO_ID_VEHICULO = "id_vehiculo";
         public const string CAMPO_PATENTE = "patente";

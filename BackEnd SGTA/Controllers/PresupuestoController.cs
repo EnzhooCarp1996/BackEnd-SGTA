@@ -84,7 +84,7 @@ public class PresupuestoController : ControllerBase
         _context.Presupuestos.Remove(presupuesto);
         await _context.SaveChangesAsync();
 
-        return Ok(Mensajes.MensajesPresupuestos.PRESUPUESTOELIMINADO + id);
+        return NoContent();
     }
 }
 
