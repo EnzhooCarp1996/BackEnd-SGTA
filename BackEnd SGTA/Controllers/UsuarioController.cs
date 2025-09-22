@@ -57,7 +57,7 @@ public class UsuarioController : ControllerBase
             NombreUsuario = usuario.NombreUsuario,
             Correo = usuario.Correo,
             Contrasenia = _passwordService.HashPassword(usuario, usuario.Contrasenia),
-            Rol = usuario.Rol
+            Role = usuario.Role
         };
 
         await _context.Usuarios.AddAsync(registroUsuario);
@@ -83,7 +83,7 @@ public class UsuarioController : ControllerBase
         // Actualizar campos modificables
         usuarioExistente.NombreUsuario = usuario.NombreUsuario;
         usuarioExistente.Correo = usuario.Correo;
-        usuarioExistente.Rol = usuario.Rol;
+        usuarioExistente.Role = usuario.Role;
 
         // Solo si se envía nueva contraseña
         if (!string.IsNullOrEmpty(usuario.Contrasenia))

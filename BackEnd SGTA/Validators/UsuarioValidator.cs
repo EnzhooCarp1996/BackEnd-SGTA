@@ -21,13 +21,13 @@ public class UsuarioValidator : AbstractValidator<Usuario>
 
         RuleFor(u => u.Contrasenia)
             .NotEmpty().WithMessage(Mensajes.MensajesUsuarios.CONTRASENIAOBLIGATORIO);
-            // .MinimumLength(Mensajes.MensajesUsuarios.MINSEIS).WithMessage(Mensajes.MensajesUsuarios.MINCONTRASENIA);
+        // .MinimumLength(Mensajes.MensajesUsuarios.MINSEIS).WithMessage(Mensajes.MensajesUsuarios.MINCONTRASENIA);
         /*
         .Matches(@"[A-Z]").WithMessage("La contraseña debe contener al menos una letra mayúscula.")
         .Matches(@"[a-z]").WithMessage("La contraseña debe contener al menos una letra minúscula.")
         .Matches(@"\d").WithMessage("La contraseña debe contener al menos un número.");*/
 
-        RuleFor(u => u.Rol)
+        RuleFor(u => u.Role)
             .IsInEnum().WithMessage(Mensajes.MensajesUsuarios.MENSAJEROLUSUARIO);
     }
 }

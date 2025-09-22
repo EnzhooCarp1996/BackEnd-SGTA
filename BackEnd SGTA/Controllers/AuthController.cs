@@ -36,7 +36,12 @@ public class AuthController : ControllerBase
 
         var token = _tokenService.GenerateToken(usuario);
 
-        return Ok(new { token });
+        return Ok(new 
+    { 
+        token,
+        nombreUsuario = usuario.NombreUsuario,
+        role = usuario.Role.ToString()
+    });
     }
 }
 

@@ -34,8 +34,7 @@ public class TokenService
                             new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds().ToString()),
                 new Claim("IdUsuario", usuario.IdUsuario.ToString()),
                 new Claim("NombreUsuario", usuario.NombreUsuario ?? string.Empty),
-                new Claim("Contrasenia", usuario.Contrasenia ?? string.Empty),
-                new Claim(ClaimTypes.Role, usuario.Rol.ToString())
+                new Claim("role", usuario.Role.ToString())
             };
 
         var key = new SymmetricSecurityKey(

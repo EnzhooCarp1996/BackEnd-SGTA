@@ -7,7 +7,7 @@ public class Usuario
     public required string NombreUsuario { get; set; }
     public string? Correo { get; set; }
     public required string Contrasenia { get; set; }
-    public RolUsuario Rol { get; set; }
+    public RolUsuario Role { get; set; }
 
     public enum RolUsuario
     {

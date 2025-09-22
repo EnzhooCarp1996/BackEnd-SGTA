@@ -24,7 +24,7 @@ public class UsuarioConfiguration : IEntityTypeConfiguration<Usuario>
                         .IsRequired()
                         .HasColumnName(Mensajes.MensajesUsuarios.CAMPO_CORREO);
 
-                builder.Property(u => u.Rol)
+                builder.Property(u => u.Role)
                         .IsRequired()
                         .HasColumnType(Mensajes.MensajesUsuarios.COLUMNTYPE_ENUM)
                         .HasColumnName(Mensajes.MensajesUsuarios.CAMPO_ROL);
