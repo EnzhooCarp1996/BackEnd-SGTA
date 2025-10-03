@@ -1,9 +1,8 @@
-using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using BackEndSGTA.Helpers;
 using BackEndSGTA.Models;
-using BackEndSGTA.Data;
-using Microsoft.AspNetCore.Authorization;
+using BackEndSGTA.Services;
 
 namespace BackEndSGTA.Controllers;
 
@@ -12,79 +11,64 @@ namespace BackEndSGTA.Controllers;
 [Authorize]
 public class PresupuestoController : ControllerBase
 {
-    private readonly AppDbContext _context;
+    private readonly PresupuestoService _presupuestoService;
 
-    public PresupuestoController(AppDbContext context) => _context = context;
-
-    // GET: api/Presupuestos
-    [HttpGet]
-    public async Task<ActionResult<IEnumerable<Presupuesto>>> GetFactura()
+    public PresupuestoController(PresupuestoService presupuestoService)
     {
-        // Trae todos los presupuestos
-        var presupuesto = await _context.Presupuestos.ToListAsync();
-        return Ok(presupuesto);
+        _presupuestoService = presupuestoService;
     }
 
-    // GET: api/Presupuestos/5
-    [HttpGet("{id}")]
-    public async Task<ActionResult<Presupuesto>> GetfacturaById(int id)
+    // GET: api/Presupuesto
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<Presupuesto>>> GetPresupuestos()
     {
-        var presupuesto = await _context.Presupuestos.FirstOrDefaultAsync(f => f.IdPresupuesto == id);
+        var lista = await _presupuestoService.GetAllAsync();
+        return Ok(lista);
+    }
 
+    // GET: api/Presupuesto/{id}
+    [HttpGet("{id}")]
+    public async Task<ActionResult<Presupuesto>> GetPresupuestoById(string id)
+    {
+        var presupuesto = await _presupuestoService.GetByIdAsync(id);
         if (presupuesto == null)
             return NotFound(new { mensaje = Mensajes.MensajesPresupuestos.PRESUPUESTONOTFOUND + id });
 
         return Ok(presupuesto);
     }
 
-    // POST: api/Presupuestos
+    // POST: api/Presupuesto
     [Authorize(Roles = "Admin,Encargado")]
     [HttpPost]
-    public async Task<ActionResult<Presupuesto>> Postfactura(Presupuesto presupuesto)
+    public async Task<ActionResult<Presupuesto>> PostPresupuesto([FromBody] Presupuesto presupuesto)
     {
-        // FluentValidation se ejecuta automáticamente antes de entrar aquí
-        _context.Presupuestos.Add(presupuesto);
-        await _context.SaveChangesAsync();
-
-        return CreatedAtAction(nameof(GetfacturaById), new { id = presupuesto.IdPresupuesto }, presupuesto);
+        await _presupuestoService.CreateAsync(presupuesto);
+        return CreatedAtAction(nameof(GetPresupuestoById), new { id = presupuesto.IdPresupuesto }, presupuesto);
     }
 
-    // PUT: api/Presupuestos/5
+    // PUT: api/Presupuesto/{id}
     [Authorize(Roles = "Admin,Encargado")]
     [HttpPut("{id}")]
-    public async Task<IActionResult> PutPresupuesto(int id, Presupuesto presupuesto)
+    public async Task<IActionResult> PutPresupuesto(string id, [FromBody] Presupuesto presupuesto)
     {
-        if (id != presupuesto.IdPresupuesto)
-            return BadRequest(Mensajes.MensajesPresupuestos.PRESUPUESTONOENCONTRADO);
-
-        // Verificar que el presupuesto exista
-        var presupuestoExistente = await _context.Presupuestos.FindAsync(id);
-
-        if (presupuestoExistente == null)
+        var existing = await _presupuestoService.GetByIdAsync(id);
+        if (existing == null)
             return NotFound(new { mensaje = Mensajes.MensajesPresupuestos.PRESUPUESTONOTFOUND + id });
 
-        // Copiar los campos modificables
-        _context.Entry(presupuestoExistente).CurrentValues.SetValues(presupuesto);
-
-        await _context.SaveChangesAsync();
-
+        await _presupuestoService.UpdateAsync(id, presupuesto);
         return NoContent();
     }
 
-    // DELETE: api/Presupuesto/5
+    // DELETE: api/Presupuesto/{id}
     [Authorize(Roles = "Admin,Encargado")]
     [HttpDelete("{id}")]
-    public async Task<IActionResult> DeletePresupuesto(int id)
+    public async Task<IActionResult> DeletePresupuesto(string id)
     {
-        var presupuesto = await _context.Presupuestos.FindAsync(id);
-
-        if (presupuesto == null)
+        var existing = await _presupuestoService.GetByIdAsync(id);
+        if (existing == null)
             return NotFound(new { mensaje = Mensajes.MensajesPresupuestos.PRESUPUESTONOTFOUND + id });
 
-        _context.Presupuestos.Remove(presupuesto);
-        await _context.SaveChangesAsync();
-
+        await _presupuestoService.DeleteAsync(id);
         return NoContent();
     }
 }
-

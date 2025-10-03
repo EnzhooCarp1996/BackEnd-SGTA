@@ -1,8 +1,9 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore;
 using BackEndSGTA.Helpers;
+using BackEndSGTA.Models;
 
-namespace BackEndSGTA.Models.Configurations;
+namespace BackEndSGTA.Data;
 
 public class ClienteConfiguration : IEntityTypeConfiguration<Cliente>
 {

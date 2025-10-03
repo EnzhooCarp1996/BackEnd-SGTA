@@ -6,6 +6,7 @@ using BackEndSGTA.Data;
 using Microsoft.AspNetCore.Authorization;
 using System.Net.Http;
 using System.Threading.Tasks;
+using BackEndSGTA.Services;
 
 namespace BackEndSGTA.Controllers;
 
@@ -14,12 +15,12 @@ namespace BackEndSGTA.Controllers;
 [Authorize]
 public class VehiculoController : ControllerBase
 {
-    private readonly AppDbContext _context;
+    private readonly VehiculoService _vehiculoService;
     private readonly HttpClient _httpClient;
 
-    public VehiculoController(AppDbContext context, IHttpClientFactory httpClientFactory)
+    public VehiculoController(VehiculoService vehiculoService, IHttpClientFactory httpClientFactory)
     {
-        _context = context;
+        _vehiculoService = vehiculoService;
         _httpClient = httpClientFactory.CreateClient();
     }
 
@@ -27,8 +28,7 @@ public class VehiculoController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Vehiculo>>> GetVehiculos()
     {
-        // Trae todos los vehiculos
-        var vehiculos = await _context.Vehiculos.ToListAsync();
+        var vehiculos = await _vehiculoService.GetVehiculoAllAsync();
         return Ok(vehiculos);
     }
 
@@ -36,8 +36,7 @@ public class VehiculoController : ControllerBase
     [HttpGet("{id}")]
     public async Task<ActionResult<Vehiculo>> GetVehiculoById(int id)
     {
-        var vehiculo = await _context.Vehiculos.FirstOrDefaultAsync(v => v.IdVehiculo == id);
-
+        var vehiculo = await _vehiculoService.GetVehiculoByIdAsync(id);
         if (vehiculo == null)
             return NotFound(new { mensaje = Mensajes.MensajesVehiculos.VEHICULONOTFOUND + id });
 
@@ -49,15 +48,8 @@ public class VehiculoController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<Vehiculo>> PostVehiculo([FromBody] Vehiculo vehiculo)
     {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState); // esto devuelve los errores exactos de validación
-        }
-        // FluentValidation se ejecuta automáticamente antes de entrar aquí
-        _context.Vehiculos.Add(vehiculo);
-        await _context.SaveChangesAsync();
-
-        return CreatedAtAction(nameof(GetVehiculoById), new { id = vehiculo.IdVehiculo }, vehiculo);
+        var created = await _vehiculoService.CreateVehiculoAsync(vehiculo);
+        return CreatedAtAction(nameof(GetVehiculoById), new { id = created.IdVehiculo }, created);
     }
 
     // PUT: api/Vehiculos/5
@@ -65,19 +57,8 @@ public class VehiculoController : ControllerBase
     [HttpPut("{id}")]
     public async Task<IActionResult> PutVehiculo(int id, [FromBody] Vehiculo vehiculo)
     {
-        if (id != vehiculo.IdVehiculo)
-            return BadRequest(Mensajes.MensajesVehiculos.VEHICULONOENCONTRADO);
-
-        // Verificar que el vehiculo exista
-        var vehiculoExistente = await _context.Vehiculos.FindAsync(id);
-
-        if (vehiculoExistente == null)
-            return NotFound(new { mensaje = Mensajes.MensajesVehiculos.VEHICULONOTFOUND + id });
-
-        // Copiar los campos modificables
-        _context.Entry(vehiculoExistente).CurrentValues.SetValues(vehiculo);
-
-        await _context.SaveChangesAsync();
+        var updated = await _vehiculoService.UpdateVehiculoAsync(id, vehiculo);
+        if (!updated) return NotFound(new { mensaje = Mensajes.MensajesVehiculos.VEHICULONOTFOUND + id });
 
         return NoContent();
     }
@@ -87,16 +68,12 @@ public class VehiculoController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteVehiculo(int id)
     {
-        var vehiculo = await _context.Vehiculos.FindAsync(id);
-
-        if (vehiculo == null)
-            return NotFound(new { mensaje = Mensajes.MensajesVehiculos.VEHICULONOTFOUND + id });
-
-        _context.Vehiculos.Remove(vehiculo);
-        await _context.SaveChangesAsync();
+        var deleted = await _vehiculoService.DeleteVehiculoAsync(id);
+        if (!deleted) return NotFound(new { mensaje = Mensajes.MensajesVehiculos.VEHICULONOTFOUND + id });
 
         return NoContent();
     }
+
 
     //----------------------------------------------------------------------------------------------------------------
 

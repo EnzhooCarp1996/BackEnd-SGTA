@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Identity;
 using BackEndSGTA.Models;
 
+namespace BackEndSGTA.Services;
+
 public class PasswordService
 {
     private readonly PasswordHasher<Usuario> _hasher = new PasswordHasher<Usuario>();

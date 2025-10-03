@@ -1,8 +1,6 @@
-using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
 using BackEndSGTA.Helpers;
 using BackEndSGTA.Models;
-using BackEndSGTA.Data;
 using Microsoft.AspNetCore.Authorization;
 using BackEndSGTA.Services;
 
@@ -13,24 +11,18 @@ namespace BackEndSGTA.Controllers;
 [Authorize]
 public class UsuarioController : ControllerBase
 {
-    private readonly AppDbContext _context;
-    private readonly TokenService _tokenService;
-    private readonly PasswordService _passwordService;
+    private readonly UsuarioService _usuarioService;
 
-
-    public UsuarioController(AppDbContext context, TokenService tokenService, PasswordService passwordService)
+    public UsuarioController(UsuarioService usuarioService)
     {
-        _context = context;
-        _tokenService = tokenService;
-        _passwordService = passwordService;
+        _usuarioService = usuarioService;
     }
 
-    // GET: api/Usuarios
+    // GET: api/Usuario
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Usuario>>> GetUsuarios()
     {
-        // Trae todos los usuarios
-        var usuarios = await _context.Usuarios.ToListAsync();
+        var usuarios = await _usuarioService.GetUsuariosAsync();
         return Ok(usuarios);
     }
 
@@ -38,8 +30,7 @@ public class UsuarioController : ControllerBase
     [HttpGet("{id}")]
     public async Task<ActionResult<Usuario>> GetUsuarioById(int id)
     {
-        var usuario = await _context.Usuarios.FindAsync(id);
-
+        var usuario = await _usuarioService.GetUsuarioByIdAsync(id);
         if (usuario == null)
             return NotFound(new { mensaje = Mensajes.MensajesUsuarios.USUARIONOTFOUND + id });
 
@@ -52,65 +43,29 @@ public class UsuarioController : ControllerBase
     public async Task<ActionResult<Usuario>> PostUsuario(Usuario usuario)
     {
         // FluentValidation se ejecuta automáticamente antes de entrar aquí
-        var registroUsuario = new Usuario
-        {
-            NombreUsuario = usuario.NombreUsuario,
-            Correo = usuario.Correo,
-            Contrasenia = _passwordService.HashPassword(usuario, usuario.Contrasenia),
-            Role = usuario.Role
-        };
-
-        await _context.Usuarios.AddAsync(registroUsuario);
-        await _context.SaveChangesAsync();
-
-        return CreatedAtAction(nameof(GetUsuarioById), new { id = registroUsuario.IdUsuario }, registroUsuario);
+        var nuevoUsuario = await _usuarioService.CreateAsync(usuario);
+        return CreatedAtAction(nameof(GetUsuarioById), new { id = nuevoUsuario.IdUsuario }, nuevoUsuario);
     }
 
-    // PUT: api/Usuarios/5
+    // PUT: api/Usuario/5
     [Authorize(Roles = "Admin,Encargado")]
     [HttpPut("{id}")]
-    public async Task<IActionResult> PutUsuario(int id, [FromBody] Usuario usuario)
+    public async Task<IActionResult> PutUsuario(int id, Usuario usuario)
     {
-        if (id != usuario.IdUsuario)
-            return BadRequest(Mensajes.MensajesUsuarios.USUARIONOENCONTRADO);
-
-        // Verificar que el usuario exista
-        var usuarioExistente = await _context.Usuarios.FindAsync(id);
-
-        if (usuarioExistente == null)
-            return NotFound(new { mensaje = Mensajes.MensajesUsuarios.USUARIONOTFOUND + id });
-
-        // Actualizar campos modificables
-        usuarioExistente.NombreUsuario = usuario.NombreUsuario;
-        usuarioExistente.Correo = usuario.Correo;
-        usuarioExistente.Role = usuario.Role;
-
-        // Solo si se envía nueva contraseña
-        if (!string.IsNullOrEmpty(usuario.Contrasenia))
-        {
-            usuarioExistente.Contrasenia = _passwordService.HashPassword(usuarioExistente, usuario.Contrasenia);
-        }
-
-        await _context.SaveChangesAsync();
+        var actualizado = await _usuarioService.UpdateUsuarioAsync(id, usuario);
+        if (!actualizado) return NotFound(new { mensaje = Mensajes.MensajesUsuarios.USUARIONOTFOUND + id });
 
         return NoContent();
     }
 
-    // DELETE: api/Usuarios/5
+    // DELETE: api/Usuario/5
     [Authorize(Roles = "Admin,Encargado")]
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteUsuario(int id)
     {
-        var usuario = await _context.Usuarios.FindAsync(id);
-
-        if (usuario == null)
-            return NotFound(new { mensaje = Mensajes.MensajesUsuarios.USUARIONOTFOUND + id });
-
-        _context.Usuarios.Remove(usuario);
-        await _context.SaveChangesAsync();
+        var eliminado = await _usuarioService.DeleteUsuarioAsync(id);
+        if (!eliminado) return NotFound(new { mensaje = Mensajes.MensajesUsuarios.USUARIONOTFOUND + id });
 
         return NoContent();
     }
-
 }
-
