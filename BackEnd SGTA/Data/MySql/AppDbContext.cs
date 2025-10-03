@@ -13,14 +13,16 @@ public class AppDbContext : DbContext
     public DbSet<Cliente> Clientes { get; set; }
     public DbSet<Usuario> Usuarios { get; set; }
     public DbSet<Vehiculo> Vehiculos { get; set; }
-    public DbSet<Presupuesto> Presupuestos { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
 
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
-
+        // Ignoramos las clases que solo se usan en MongoDB
+        modelBuilder.Ignore<Presupuesto>();
+        modelBuilder.Ignore<ItemUbicacion>();
+        modelBuilder.Ignore<DetalleItem>();
     }
 }
 

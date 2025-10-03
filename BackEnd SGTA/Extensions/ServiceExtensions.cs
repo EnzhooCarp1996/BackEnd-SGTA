@@ -8,6 +8,7 @@ using BackEndSGTA.Data;
 using FluentValidation;
 using System.Text.Json;
 using System.Text;
+using Scrutor;
 
 namespace BackEndSGTA.Extensions;
 
@@ -25,6 +26,9 @@ public static class ServiceExtensions
         services.AddDbContext<AppDbContext>(options =>
             options.UseMySql(config.GetConnectionString("DefaultConnection"),
             new MySqlServerVersion(new Version(8, 0, 43))));
+
+        // MongoDbContext
+        services.AddSingleton<MongoDbContext>();
 
         // Controllers
         services.AddControllers()
@@ -62,9 +66,12 @@ public static class ServiceExtensions
             });
         });
 
-        services.AddScoped<TokenService>();
-        services.AddScoped<PasswordService>();
-
+        // Al final de ConfigureServices, antes de AddAuthentication
+        services.Scan(scan => scan
+            .FromAssemblyOf<PresupuestoService>()   // Escanea el ensamblado donde están tus servicios
+            .AddClasses(classes => classes.InNamespaces("BackEndSGTA.Services")) // solo tus servicios
+            .AsSelfWithInterfaces()                  // Se registra como su propia clase y sus interfaces
+            .WithScopedLifetime());                  // Lifetime Scoped
 
         // JWT
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
