@@ -1,8 +1,7 @@
-
 using BackEndSGTA.Models;
 using MongoDB.Driver;
 
-namespace BackEndSGTA.Data;
+namespace BackEndSGTA.Data.Mongo;
 
 public class MongoDbContext
 {

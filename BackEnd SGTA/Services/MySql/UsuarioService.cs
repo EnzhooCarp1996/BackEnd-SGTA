@@ -1,6 +1,6 @@
-using BackEndSGTA.Data;
-using BackEndSGTA.Models;
 using Microsoft.EntityFrameworkCore;
+using BackEndSGTA.Data.MySql;
+using BackEndSGTA.Models;
 
 namespace BackEndSGTA.Services;
 
@@ -15,17 +15,17 @@ public class UsuarioService
         _passwordService = passwordService;
     }
 
-    public async Task<List<Usuario>> GetUsuariosAsync()
+    public async Task<List<Usuario>> GetAllUsuariosAsync()
     {
         return await _context.Usuarios.ToListAsync();
     }
 
-    public async Task<Usuario?> GetUsuarioByIdAsync(int id)
+    public async Task<Usuario?> GetByIdUsuarioAsync(int id)
     {
         return await _context.Usuarios.FindAsync(id);
     }
 
-    public async Task<Usuario> CreateAsync(Usuario usuario)
+    public async Task<Usuario> CreateUsuarioAsync(Usuario usuario)
     {
         var registroUsuario = new Usuario
         {

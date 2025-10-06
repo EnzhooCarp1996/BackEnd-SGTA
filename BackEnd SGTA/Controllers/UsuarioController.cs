@@ -1,8 +1,8 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using BackEndSGTA.Services;
 using BackEndSGTA.Helpers;
 using BackEndSGTA.Models;
-using Microsoft.AspNetCore.Authorization;
-using BackEndSGTA.Services;
 
 namespace BackEndSGTA.Controllers;
 
@@ -22,7 +22,7 @@ public class UsuarioController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Usuario>>> GetUsuarios()
     {
-        var usuarios = await _usuarioService.GetUsuariosAsync();
+        var usuarios = await _usuarioService.GetAllUsuariosAsync();
         return Ok(usuarios);
     }
 
@@ -30,7 +30,7 @@ public class UsuarioController : ControllerBase
     [HttpGet("{id}")]
     public async Task<ActionResult<Usuario>> GetUsuarioById(int id)
     {
-        var usuario = await _usuarioService.GetUsuarioByIdAsync(id);
+        var usuario = await _usuarioService.GetByIdUsuarioAsync(id);
         if (usuario == null)
             return NotFound(new { mensaje = Mensajes.MensajesUsuarios.USUARIONOTFOUND + id });
 
@@ -43,7 +43,7 @@ public class UsuarioController : ControllerBase
     public async Task<ActionResult<Usuario>> PostUsuario(Usuario usuario)
     {
         // FluentValidation se ejecuta automáticamente antes de entrar aquí
-        var nuevoUsuario = await _usuarioService.CreateAsync(usuario);
+        var nuevoUsuario = await _usuarioService.CreateUsuarioAsync(usuario);
         return CreatedAtAction(nameof(GetUsuarioById), new { id = nuevoUsuario.IdUsuario }, nuevoUsuario);
     }
 

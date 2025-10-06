@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
+using BackEndSGTA.Data.MySql;
 using BackEndSGTA.Models;
-using BackEndSGTA.Data;
 
 namespace BackEndSGTA.Services;
 
@@ -13,19 +13,19 @@ public class ClienteService
         _context = context;
     }
 
-    public async Task<List<Cliente>> GetClienteAllAsync() =>
+    public async Task<List<Cliente>> GetAllClientesAsync() =>
         await _context.Clientes
             .Include(c => c.Vehiculos)
             .AsSplitQuery()
             .ToListAsync();
 
-    public async Task<Cliente?> GetClienteByIdAsync(int id) =>
+    public async Task<Cliente?> GetByIdClienteAsync(int id) =>
         await _context.Clientes
             .Include(c => c.Vehiculos)
             .AsSplitQuery()
             .FirstOrDefaultAsync(c => c.IdCliente == id);
 
-    public async Task<Cliente> CreateAsync(Cliente cliente)
+    public async Task<Cliente> CreateClienteAsync(Cliente cliente)
     {
         _context.Clientes.Add(cliente);
         await _context.SaveChangesAsync();

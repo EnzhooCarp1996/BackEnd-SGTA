@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using BackEndSGTA.Models;
 
-namespace BackEndSGTA.Data;
+namespace BackEndSGTA.Data.MySql;
 
 public class AppDbContext : DbContext
 {
@@ -21,8 +21,7 @@ public class AppDbContext : DbContext
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
         // Ignoramos las clases que solo se usan en MongoDB
         modelBuilder.Ignore<Presupuesto>();
-        modelBuilder.Ignore<ItemUbicacion>();
-        modelBuilder.Ignore<DetalleItem>();
+        modelBuilder.Ignore<PresupuestoItem>();
     }
 }
 

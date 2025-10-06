@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using BackEndSGTA.Helpers;
 using BackEndSGTA.Models;
 
-namespace BackEndSGTA.Data;
+namespace BackEndSGTA.Data.MySql;
 
 public class UsuarioConfiguration : IEntityTypeConfiguration<Usuario>
 {

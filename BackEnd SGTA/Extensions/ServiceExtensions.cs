@@ -3,12 +3,12 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
 using FluentValidation.AspNetCore;
+using BackEndSGTA.Data.Mongo;
+using BackEndSGTA.Data.MySql;
 using BackEndSGTA.Services;
-using BackEndSGTA.Data;
 using FluentValidation;
 using System.Text.Json;
 using System.Text;
-using Scrutor;
 
 namespace BackEndSGTA.Extensions;
 
@@ -27,6 +27,9 @@ public static class ServiceExtensions
             options.UseMySql(config.GetConnectionString("DefaultConnection"),
             new MySqlServerVersion(new Version(8, 0, 43))));
 
+        // Registrar mapeos BSON de MongoDB
+        PresupuestoConfiguration.Register();
+        
         // MongoDbContext
         services.AddSingleton<MongoDbContext>();
 
@@ -94,5 +97,6 @@ public static class ServiceExtensions
 
         // HttpClient para llamadas externas
         services.AddHttpClient();
+
     }
 }

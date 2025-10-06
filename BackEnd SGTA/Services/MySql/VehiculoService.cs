@@ -1,6 +1,6 @@
-using BackEndSGTA.Data;
-using BackEndSGTA.Models;
 using Microsoft.EntityFrameworkCore;
+using BackEndSGTA.Data.MySql;
+using BackEndSGTA.Models;
 
 namespace BackEndSGTA.Services;
 
@@ -13,12 +13,12 @@ public class VehiculoService
         _context = context;
     }
 
-    public async Task<List<Vehiculo>> GetVehiculoAllAsync()
+    public async Task<List<Vehiculo>> GetAllVehiculosAsync()
     {
         return await _context.Vehiculos.ToListAsync();
     }
 
-    public async Task<Vehiculo?> GetVehiculoByIdAsync(int id)
+    public async Task<Vehiculo?> GetByIdVehiculoAsync(int id)
     {
         return await _context.Vehiculos.FirstOrDefaultAsync(v => v.IdVehiculo == id);
     }

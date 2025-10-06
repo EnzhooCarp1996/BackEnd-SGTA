@@ -1,12 +1,8 @@
-using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using BackEndSGTA.Services;
 using BackEndSGTA.Helpers;
 using BackEndSGTA.Models;
-using BackEndSGTA.Data;
-using Microsoft.AspNetCore.Authorization;
-using System.Net.Http;
-using System.Threading.Tasks;
-using BackEndSGTA.Services;
 
 namespace BackEndSGTA.Controllers;
 
@@ -28,7 +24,7 @@ public class VehiculoController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Vehiculo>>> GetVehiculos()
     {
-        var vehiculos = await _vehiculoService.GetVehiculoAllAsync();
+        var vehiculos = await _vehiculoService.GetAllVehiculosAsync();
         return Ok(vehiculos);
     }
 
@@ -36,7 +32,7 @@ public class VehiculoController : ControllerBase
     [HttpGet("{id}")]
     public async Task<ActionResult<Vehiculo>> GetVehiculoById(int id)
     {
-        var vehiculo = await _vehiculoService.GetVehiculoByIdAsync(id);
+        var vehiculo = await _vehiculoService.GetByIdVehiculoAsync(id);
         if (vehiculo == null)
             return NotFound(new { mensaje = Mensajes.MensajesVehiculos.VEHICULONOTFOUND + id });
 

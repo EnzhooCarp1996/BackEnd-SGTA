@@ -1,5 +1,5 @@
+using BackEndSGTA.Data.Mongo;
 using BackEndSGTA.Models;
-using BackEndSGTA.Data;
 using MongoDB.Driver;
 
 namespace BackEndSGTA.Services;

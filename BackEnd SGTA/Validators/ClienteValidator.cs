@@ -1,8 +1,8 @@
 using static BackEndSGTA.Models.Cliente;
+using BackEndSGTA.Data.MySql;
 using BackEndSGTA.Helpers;
 using BackEndSGTA.Models;
 using FluentValidation;
-using BackEndSGTA.Data;
 
 public class ClienteValidator : AbstractValidator<Cliente>
 {

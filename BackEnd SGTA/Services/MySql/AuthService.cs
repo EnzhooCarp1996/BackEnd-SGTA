@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
+using BackEndSGTA.Data.MySql;
 using BackEndSGTA.Models;
-using BackEndSGTA.Data;
 
 namespace BackEndSGTA.Services;
 

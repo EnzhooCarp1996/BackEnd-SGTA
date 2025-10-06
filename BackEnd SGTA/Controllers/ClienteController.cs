@@ -21,14 +21,14 @@ public class ClienteController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Cliente>>> GetClientes()
     {
-        var clientes = await _service.GetClienteAllAsync();
+        var clientes = await _service.GetAllClientesAsync();
         return Ok(clientes);
     }
 
     [HttpGet("{id}")]
     public async Task<ActionResult<Cliente>> GetClienteById(int id)
     {
-        var cliente = await _service.GetClienteByIdAsync(id);
+        var cliente = await _service.GetByIdClienteAsync(id);
         if (cliente == null)
             return NotFound(new { mensaje = Mensajes.MensajesClientes.CLIENTENOTFOUND + id });
 
@@ -39,7 +39,7 @@ public class ClienteController : ControllerBase
     [Authorize(Roles = "Admin,Encargado")]
     public async Task<ActionResult<Cliente>> PostCliente([FromBody] Cliente cliente)
     {
-        var creado = await _service.CreateAsync(cliente);
+        var creado = await _service.CreateClienteAsync(cliente);
         return CreatedAtAction(nameof(GetClienteById), new { id = creado.IdCliente }, creado);
     }
 

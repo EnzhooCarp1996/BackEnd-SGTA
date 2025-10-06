@@ -1,4 +1,3 @@
-
 using BackEndSGTA.Middleware;
 
 namespace BackEndSGTA.Extensions;
