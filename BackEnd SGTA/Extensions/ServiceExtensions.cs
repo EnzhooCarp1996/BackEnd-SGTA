@@ -29,7 +29,7 @@ public static class ServiceExtensions
 
         // Registrar mapeos BSON de MongoDB
         PresupuestoConfiguration.Register();
-        
+
         // MongoDbContext
         services.AddSingleton<MongoDbContext>();
 
@@ -94,9 +94,6 @@ public static class ServiceExtensions
             });
 
         services.AddAuthorization();
-
-        // HttpClient para llamadas externas
-        services.AddHttpClient();
 
     }
 }

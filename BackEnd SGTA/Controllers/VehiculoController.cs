@@ -12,12 +12,10 @@ namespace BackEndSGTA.Controllers;
 public class VehiculoController : ControllerBase
 {
     private readonly VehiculoService _vehiculoService;
-    private readonly HttpClient _httpClient;
 
-    public VehiculoController(VehiculoService vehiculoService, IHttpClientFactory httpClientFactory)
+    public VehiculoController(VehiculoService vehiculoService)
     {
         _vehiculoService = vehiculoService;
-        _httpClient = httpClientFactory.CreateClient();
     }
 
     // GET: api/Vehiculos
@@ -79,14 +77,12 @@ public class VehiculoController : ControllerBase
     {
         try
         {
-            var response = await _httpClient.GetAsync("https://www.carqueryapi.com/api/0.3/?cmd=getMakes");
-            response.EnsureSuccessStatusCode();
-            var content = await response.Content.ReadAsStringAsync();
-            return Ok(content);
+            var marcas = await _vehiculoService.GetDistinctMarcasAsync();
+            return Ok(marcas);
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new { mensaje = "No se pudieron cargar las marcas", error = ex.Message });
+            return StatusCode(500, new { mensaje = "Error al obtener las marcas", error = ex.Message });
         }
     }
 
@@ -96,14 +92,12 @@ public class VehiculoController : ControllerBase
     {
         try
         {
-            var response = await _httpClient.GetAsync($"https://www.carqueryapi.com/api/0.3/?cmd=getModels&make={marca}");
-            response.EnsureSuccessStatusCode();
-            var content = await response.Content.ReadAsStringAsync();
-            return Ok(content);
+            var modelos = await _vehiculoService.GetModelosByMarcaAsync(marca);
+            return Ok(modelos);
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new { mensaje = "No se pudieron cargar los modelos", error = ex.Message });
+            return StatusCode(500, new { mensaje = "Error al obtener los modelos", error = ex.Message });
         }
     }
 }

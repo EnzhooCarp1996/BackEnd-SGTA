@@ -49,4 +49,24 @@ public class VehiculoService
         await _context.SaveChangesAsync();
         return true;
     }
+    // Obtener todas las marcas distintas
+    public async Task<List<string>> GetDistinctMarcasAsync()
+    {
+        return await _context.Vehiculos
+            .Select(v => v.Marca)
+            .Distinct()
+            .OrderBy(m => m)
+            .ToListAsync();
+    }
+
+    // Obtener todos los modelos según la marca
+    public async Task<List<string>> GetModelosByMarcaAsync(string marca)
+    {
+        return await _context.Vehiculos
+            .Where(v => v.Marca == marca)
+            .Select(v => v.Modelo)
+            .Distinct()
+            .OrderBy(m => m)
+            .ToListAsync();
+    }
 }

@@ -32,3 +32,8 @@ public class Subcomponente
     [BsonElement("detalles")]
     public List<string>? Detalles { get; set; }
 }
+public class NuevaParteDto
+{
+    public string Categoria { get; set; } = null!;
+    public string Componente { get; set; } = null!;
+}

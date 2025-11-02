@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using BackEndSGTA.Services;
+using BackEndSGTA.Models;
 
 [ApiController]
 [Route("api/[controller]")]
@@ -32,5 +33,20 @@ public class PartesVehiculoController : ControllerBase
         var parte = await _service.GetByCategoriaAsync(categoria);
         if (parte == null) return NotFound();
         return Ok(parte);
+    }
+
+    [HttpPost("agregar-componente")]
+    public async Task<IActionResult> AddComponent([FromBody] NuevaParteDto dto)
+    {
+        try
+        {
+            var resultado = await _service.AddComponentAsync(dto.Categoria, dto.Componente);
+            return Ok(resultado);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"Error interno: {ex.Message}");
+        }
+
     }
 }
